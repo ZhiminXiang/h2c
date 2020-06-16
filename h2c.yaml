@@ -1,0 +1,12 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: h2c
+  namespace: default
+spec:
+  template:
+    spec:
+      containers:
+      - # This is the Go import path for the binary to containerize
+        # and substitute here.
+        image: gcr.io/zhiminx-prod-test/h2c
