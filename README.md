@@ -6,8 +6,6 @@ The HTTP2 service in this repo simply accepts HTTP2 request, and display
 "Hello word: path {Your-request-path}
 ```
 
-The container itself does not accpet HTTP/1.1 request.
-
 ## Prerequesties
 
 This doc requires to have a k8s cluster with Knative installed.

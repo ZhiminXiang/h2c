@@ -2,12 +2,11 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"net"
 	"net/http"
 	"os"
 
 	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
 )
 
 func main() {
@@ -15,20 +14,13 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
-	server := http2.Server{}
-	l, err := net.Listen("tcp", "0.0.0.0:"+port)
-	if err != nil {
-		log.Fatal("Fail to listen to " + port)
+	h2s := &http2.Server{}
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "Hello, %v, http: %v\n", r.URL.Path, r.TLS == nil)
+	})
+	server := &http.Server{
+		Addr:    ":" + port,
+		Handler: h2c.NewHandler(handler, h2s),
 	}
-	for {
-		conn, err := l.Accept()
-		if err != nil {
-			log.Fatal("Fail to accept connection")
-		}
-		server.ServeConn(conn, &http2.ServeConnOpts{
-			Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				fmt.Fprintf(w, "Hello word: path %v\n", r.URL.Path)
-			}),
-		})
-	}
+	server.ListenAndServe()
 }
